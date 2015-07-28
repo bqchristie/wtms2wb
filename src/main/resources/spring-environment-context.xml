@@ -1,0 +1,54 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-sftp="http://www.springframework.org/schema/integration/sftp"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	    http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/sftp http://www.springframework.org/schema/integration/sftp/spring-integration-sftp-4.1.xsd"
+        >
+
+    <!-- DATA SOURCE -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
+
+
+    <!-- JobRepository and JobLauncher are configuration/setup classes -->
+    <bean id="jobRepository"
+          class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean"/>
+
+    <bean id="jobLauncher"
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+
+    <bean id="sftpSessionFactory" class="org.springframework.integration.sftp.session.DefaultSftpSessionFactory">
+        <property name="host" value="${wb.ftp.host}"/>
+        <property name="privateKey" value="classpath:${wb.ftp.privateKey}"/>
+        <property name="user" value="${wb.ftp.user}"/>
+        <property name="port" value="${wb.ftp.port}"/>
+        <property name="password" value=""/>
+        <property name="privateKeyPassphrase" value=""/>
+    </bean>
+
+
+    <bean id="fileNameGenerator" class="org.springframework.integration.file.DefaultFileNameGenerator"/>
+
+
+    <int:channel id="outputChannel"/>
+
+    <int-sftp:outbound-channel-adapter id="sftpOutboundAdapter"
+                                       session-factory="sftpSessionFactory"
+                                       channel="outputChannel"
+                                       charset="UTF-8"
+                                       remote-directory="test"
+                                       remote-filename-generator="fileNameGenerator"/>
+</beans>

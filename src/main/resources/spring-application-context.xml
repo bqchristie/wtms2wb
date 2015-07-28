@@ -1,0 +1,64 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+
+
+       xsi:schemaLocation="http://www.springframework.org/schema/batch	http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+      	http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+        >
+
+    <context:annotation-config/>
+
+    <!-- For distribution the environment properties should live outside  the jar -->
+    <context:property-placeholder
+            location="classpath:environment.properties,
+			classpath:application.properties"/>
+
+    <import resource="spring-environment-context.xml" />
+
+    <bean id="sftpJobTasklet" class="com.agilea.integration.wb.tasklet.SftpTasklet">
+        <property name="fileName" value="${adp.filename}"/>
+        <property name="sftpChannel" ref="outputChannel"/>
+    </bean>
+
+    <bean id="processADPTasklet" class="com.agilea.integration.wb.tasklet.JDBCtoCSVTasklet">
+        <property name="fileName" value="${adp.filename}"/>
+        <property name="dataDource" ref="dataSource"/>
+        <property name="sql" value="${adp.sql}"/>
+        <property name="recordMapper" ref="adpBalanceRecordMapper"/>
+    </bean>
+
+    <bean id="process52WksHrsTasklet" class="com.agilea.integration.wb.tasklet.JDBCtoCSVTasklet">
+        <property name="fileName" value="${52WksWrk.filename.filename}"/>
+        <property name="dataDource" ref="dataSource"/>
+        <property name="sql" value="${52WksWrk.sql}"/>
+        <property name="recordMapper" ref="52WeeksBalanceRecordMapper"/>
+    </bean>
+
+
+    <bean id="adpBalanceRecordMapper" class="com.agilea.integration.wb.jobs.model.BalanceRecordMapper">
+        <property name="balanceType" value="ADP"/>
+    </bean>
+
+    <bean id="52WeeksBalanceRecordMapper" class="com.agilea.integration.wb.jobs.model.BalanceRecordMapper">
+        <property name="balanceType" value="52 Weeks"/>
+    </bean>
+
+    <!-- ADP Job -->
+    <batch:job id="adp">
+        <batch:step id="apd.createFile" next="adp.stfp">
+            <batch:tasklet ref="processADPTasklet"/>
+        </batch:step>
+        <batch:step id="adp.stfp">
+            <batch:tasklet ref="sftpJobTasklet"/>
+        </batch:step>
+        <!--<batch:listeners>-->
+        <!--<batch:listener ref="adpJobListener" />-->
+        <!--</batch:listeners>-->
+    </batch:job>
+
+
+</beans>
