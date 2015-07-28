@@ -31,11 +31,11 @@
         <property name="recordMapper" ref="adpBalanceRecordMapper"/>
     </bean>
 
-    <bean id="process52WksHrsTasklet" class="com.agilea.integration.wb.tasklet.JDBCtoCSVTasklet">
-        <property name="fileName" value="${52WksWrk.filename.filename}"/>
+    <bean id="processAnnualHoursWorkedTasklet" class="com.agilea.integration.wb.tasklet.JDBCtoCSVTasklet">
+        <property name="fileName" value="${52WksWrk.filename"/>
         <property name="dataDource" ref="dataSource"/>
-        <property name="sql" value="${52WksWrk.sql}"/>
-        <property name="recordMapper" ref="52WeeksBalanceRecordMapper"/>
+        <property name="sql" value="${annualHoursWorked.sql}"/>
+        <property name="recordMapper" ref="AnnualHoursWorkedBalanceRecordMapper"/>
     </bean>
 
 
@@ -43,7 +43,7 @@
         <property name="balanceType" value="ADP"/>
     </bean>
 
-    <bean id="52WeeksBalanceRecordMapper" class="com.agilea.integration.wb.jobs.model.BalanceRecordMapper">
+    <bean id="AnnualHoursWorkedBalanceRecordMapper" class="com.agilea.integration.wb.jobs.model.BalanceRecordMapper">
         <property name="balanceType" value="52 Weeks"/>
     </bean>
 
@@ -55,10 +55,14 @@
         <batch:step id="adp.stfp">
             <batch:tasklet ref="sftpJobTasklet"/>
         </batch:step>
-        <!--<batch:listeners>-->
-        <!--<batch:listener ref="adpJobListener" />-->
-        <!--</batch:listeners>-->
     </batch:job>
 
-
+    <batch:job id="annualHoursWorked">
+        <batch:step id="annualHoursWorked.createFile" next="adp.stfp">
+            <batch:tasklet ref="processADPTasklet"/>
+        </batch:step>
+        <batch:step id="annualHoursWorked.stfp">
+            <batch:tasklet ref="sftpJobTasklet"/>
+        </batch:step>
+    </batch:job>
 </beans>

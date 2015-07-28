@@ -22,10 +22,13 @@ class Main {
 
 		ARGS = args;
 
-		//String jobName = System.getProperty( "job", "adp" );
+		String testJobName = System.getProperty( "job", "adp" );
+		System.out.println(testJobName);
+
 		String jobName = "adp";
 
 		Logger log  = Logger.getLogger(Main.class);
+
 		ApplicationContext context = new ClassPathXmlApplicationContext(SPRING_APP_CONTEXT_XML);
 
 		JobLauncher jobLauncher = (JobLauncher) context.getBean(JOB_LAUNCHER);
