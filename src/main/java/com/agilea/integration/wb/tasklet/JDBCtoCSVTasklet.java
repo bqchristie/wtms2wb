@@ -4,10 +4,11 @@ import com.opencsv.CSVWriter;
 import com.agilea.integration.wb.jobs.util.CSVJobEventListener;
 import com.agilea.integration.wb.jobs.util.CSVProcessor;
 import org.apache.log4j.Logger;
-import org.easybatch.core.api.Engine;
-import org.easybatch.core.api.RecordMapper;
-import org.easybatch.core.api.Report;
-import org.easybatch.core.impl.EngineBuilder;
+import org.easybatch.core.job.Job;
+import org.easybatch.core.job.JobExecutor;
+import org.easybatch.core.mapper.RecordMapper;
+import org.easybatch.core.job.JobReport;
+import org.easybatch.core.job.JobBuilder;
 import org.easybatch.jdbc.JdbcRecordReader;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -34,14 +35,14 @@ public class JDBCtoCSVTasklet implements Tasklet {
 
         final CSVWriter writer = new CSVWriter(new FileWriter(this.getFileName()), ',',CSVWriter.NO_QUOTE_CHARACTER);
 
-        Engine engine = new EngineBuilder().named(taskName + " Export Processor")
+        Job job = JobBuilder.aNewJob().named(taskName + " Export Processor")
                 .reader(new JdbcRecordReader(this.getConnection(), this.getSql()))
                 .mapper(this.getRecordMapper())
                 .processor(new CSVProcessor(writer))
-                .jobEventListener(new CSVJobEventListener(writer))
+                .jobListener(new CSVJobEventListener(writer))
                 .build();
 
-        Report report = engine.call();
+        JobReport report = JobExecutor.execute(job);
 
         //TODO write this somehwere useful
         log.info(report.toString());

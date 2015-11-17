@@ -1,14 +1,16 @@
 package com.agilea.integration.wb.jobs.util;
 
 import com.opencsv.CSVWriter;
-import org.easybatch.core.api.event.job.JobEventListener;
+import org.easybatch.core.job.JobParameters;
+import org.easybatch.core.job.JobReport;
+import org.easybatch.core.listener.JobListener;
 
 import java.io.IOException;
 
 /**
  * Created by brucechristie on 15-07-24.
  */
-public class CSVJobEventListener implements JobEventListener {
+public class CSVJobEventListener implements JobListener {
 
 
     private CSVWriter writer = null;
@@ -17,11 +19,11 @@ public class CSVJobEventListener implements JobEventListener {
         this.writer = writer;
     }
 
-    public void beforeJobStart() {
+    public void beforeJobStart(JobParameters jobParameters) {
     }
 
 
-    public void afterJobEnd() {
+    public void afterJobEnd(JobReport report) {
         try {
             writer.close();
         } catch (IOException e) {

@@ -12,6 +12,7 @@
     <properties>
         <springframework.version>4.0.6.RELEASE</springframework.version>
         <springbatch.version>3.0.1.RELEASE</springbatch.version>
+        <easybatch.version>4.0.0</easybatch.version>
         <mysql.version>5.1.31</mysql.version>
         <joda-time.version>2.3</joda-time.version>
         <log4j.version>1.2.17</log4j.version>
@@ -87,19 +88,19 @@
         <dependency>
             <groupId>org.easybatch</groupId>
             <artifactId>easybatch-core</artifactId>
-            <version>3.0.3</version>
+            <version>${easybatch.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.easybatch</groupId>
             <artifactId>easybatch-jdbc</artifactId>
-            <version>3.0.3</version>
+            <version>${easybatch.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.easybatch</groupId>
             <artifactId>easybatch-flatfile</artifactId>
-            <version>3.0.3</version>
+            <version>${easybatch.version}</version>
         </dependency>
 
         <dependency>

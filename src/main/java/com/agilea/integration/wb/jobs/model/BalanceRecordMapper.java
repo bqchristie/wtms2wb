@@ -1,20 +1,20 @@
 package com.agilea.integration.wb.jobs.model;
 
-import org.easybatch.core.api.Record;
-import org.easybatch.core.api.RecordMapper;
-import org.easybatch.core.api.RecordMappingException;
+import org.easybatch.core.record.GenericRecord;
+import org.easybatch.core.record.Record;
+import org.easybatch.core.mapper.RecordMapper;
+import org.easybatch.core.mapper.RecordMappingException;
 import org.easybatch.jdbc.JdbcRecord;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BalanceRecordMapper<T> implements RecordMapper<BalanceRecord> {
+public class BalanceRecordMapper implements RecordMapper<JdbcRecord, Record<BalanceRecord>> {
 
     private String balanceType;
 
-    public BalanceRecord mapRecord(Record record) throws RecordMappingException {
-        JdbcRecord jdbcRecord = (JdbcRecord)record;
-        ResultSet resultSet = (ResultSet)jdbcRecord.getPayload();
+    public Record<BalanceRecord> processRecord(JdbcRecord jdbcRecord) throws RecordMappingException {
+        ResultSet resultSet = jdbcRecord.getPayload();
         BalanceRecord balanceRecord = new BalanceRecord(balanceType);
         try {
             balanceRecord.setWin(resultSet.getString(1));
@@ -22,7 +22,7 @@ public class BalanceRecordMapper<T> implements RecordMapper<BalanceRecord> {
         } catch (SQLException e) {
             throw new RecordMappingException("Trouble mapping" + e.getMessage());
         }
-        return balanceRecord;
+        return new GenericRecord<BalanceRecord>(jdbcRecord.getHeader(), balanceRecord);
     }
 
     public String getBalanceType() {
