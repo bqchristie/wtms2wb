@@ -3,7 +3,6 @@ package com.agilea.integration.wb.jobs.util;
 import com.agilea.integration.wb.jobs.model.BalanceRecord;
 import com.opencsv.CSVWriter;
 import org.apache.log4j.Logger;
-import org.easybatch.core.processor.RecordProcessingException;
 import org.easybatch.core.processor.RecordProcessor;
 import org.easybatch.core.record.Record;
 
@@ -25,7 +24,7 @@ public class CSVProcessor implements RecordProcessor<Record<BalanceRecord>,Recor
         this.writer = writer;
     }
 
-    public Record<BalanceRecord> processRecord(Record<BalanceRecord> record) throws RecordProcessingException {
+    public Record<BalanceRecord> processRecord(Record<BalanceRecord> record) throws Exception {
         writer.writeNext(record.getPayload().getCSVValues());
         return record;
     }

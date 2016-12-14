@@ -36,13 +36,15 @@ public class JDBCtoCSVTasklet implements Tasklet {
         final CSVWriter writer = new CSVWriter(new FileWriter(this.getFileName()), ',',CSVWriter.NO_QUOTE_CHARACTER);
 
         Job job = JobBuilder.aNewJob().named(taskName + " Export Processor")
-                .reader(new JdbcRecordReader(this.getConnection(), this.getSql()))
+                .reader(new JdbcRecordReader(dataDource, this.getSql()))
                 .mapper(this.getRecordMapper())
                 .processor(new CSVProcessor(writer))
                 .jobListener(new CSVJobEventListener(writer))
                 .build();
 
-        JobReport report = JobExecutor.execute(job);
+        JobExecutor jobExecutor = new JobExecutor();
+        JobReport report = jobExecutor.execute(job);
+        jobExecutor.shutdown();
 
         //TODO write this somehwere useful
         log.info(report.toString());
